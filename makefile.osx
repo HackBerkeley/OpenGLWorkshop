@@ -1,0 +1,43 @@
+#!gmake 
+
+#-----------------------------------------
+#Basic Stuff -----------------------------
+CC          = g++ 
+cc          = gcc
+
+#-----------------------------------------
+#Optimization ----------------------------
+OPTMAC = -fast
+
+TARGETS = 3d_workshop
+
+OBJECTS = 3d_workshop.o
+
+#-----------------------------------------
+# Mac specific stuff
+FRAMEWORK = -framework GLUT
+FRAMEWORK += -framework OpenGL
+MACLIBS = -lGL -lGLU -lm -lstdc++ 
+MACINCS = -L"/System/Library/Frameworks/OpenGL.framework/Libraries"
+
+#-----------------------------------------
+CCOPTSMAC = $(OPTMAC) $(MACINCS) -DOSX
+LDOPTSMAC = $(OPTMAC) $(MACINCS) $(MACLIBS) -DOSX
+
+#-----------------------------------------
+#-----------------------------------------
+
+default: $(TARGETS)
+
+clean:
+	/bin/rm -f *.o $(TARGETS)
+
+#-----------------------------------------
+#-----------------------------------------
+
+3d_workshop: 3d_workshop.o
+	$(CC) 3d_workshop.o $(FRAMEWORK) $(LDOPTSMAC) -o 3d_workshop
+
+3d_workshop.o: 3d_workshop.cpp
+	$(CC) 3d_workshop.cpp -c $(CCOPTSMAC)
+
