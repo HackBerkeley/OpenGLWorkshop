@@ -480,15 +480,15 @@ float rayParticleIntersectTest(Vector3f rayStart, Vector3f direction, Particle *
     float B = 2 * (direction.dot((rayStart - center)));
     float C = (rayStart - center).dot((rayStart - center)) - radius*radius;
 
-    float underSquare = B * B - 4 * A * C;
+    float underSquareRoot = B * B - 4 * A * C;
 
-    if(underSquare < 0)
+    if(underSquareRoot < 0)
     {
         //imaginary
         return -1.0f;
     }
 
-    float underSquared = sqrt(underSquared);
+    float underSquared = sqrt(underSquareRoot);
 
     float t1 = (-B + underSquared) / (2 * A);
     float t2 = (-B - underSquared) / (2* A);
