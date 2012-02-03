@@ -1,0 +1,17 @@
+
+Outline of Workshop:
+
+
+--Outputting geometry Part I:
+
+--file geometry Part II
+
+--transformations Part III
+
+--concatenation of transformations Part IV
+
+--pushing and popping matrices Part V
+
+--user interaction (ray picking) Part VI
+
+

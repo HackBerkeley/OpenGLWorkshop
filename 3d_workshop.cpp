@@ -285,12 +285,13 @@ public:
 	
 	void collisionCheck()
 	{
-		//TODO_collision
-		
 		//Check for a collision with the ground plane
 		
-			//if so, reverse your velocity y component!
-		
+        if(pos(2) < 0)
+        {
+            pos(2) = 0;
+            vel(2) = -1 * vel(2);
+        }
 		
     }
     
@@ -303,6 +304,7 @@ public:
 		pos = pos + 
                 vel * deltaT + 
                 deltaT * deltaT * 0.5f * accel;
+        vel = vel + deltaT * accel;
 
 		//collision detection
 		collisionCheck();
@@ -657,6 +659,11 @@ void handleClick(int button, int state, int x, int y)
 		//GLUT_DOWN -> pushed down
 		//GLUT_UP -> released
 	
+    //3D Workshop Part VI:
+
+
+    //ray pick!!
+
     float origin[3];
     Vector3f direction = rayPick(x, y, origin);
     Vector3f originPos(origin[0],origin[1],origin[2]);
@@ -667,7 +674,15 @@ void handleClick(int button, int state, int x, int y)
     }
     else
     {
-        
+        //get a position
+        Vector3f pos(0,0,0);
+        Vector3f vel(0,0,0);
+        /////////////////Vector3f vel(myRand(),myRand(),myRand());Vector3f vel = direction * 0.01;Vector3f pos = originPos + 0.1f*direction;
+
+        Vector3f accel(0,0,-1);
+
+        Particle * p = new Particle(pos,vel,accel,int(myRand() * 1000),myRand() * 0.2 + 0.1);
+        allParticles.push_back(*p);
     }
 }
 
@@ -727,7 +742,8 @@ void handleDrawing()
 
 	//draw the axes and such
 	drawAxes();
-    //drawTeapot();
+
+    drawTeapot();
 
     //3D Workshop Part I:
     //draw a triangle!
@@ -740,29 +756,22 @@ void handleDrawing()
     //cheater1(); 
 
 
-    //3D Workshop Part III:
+    //3D Workshop Part III: IV: V:
     //Transformations!!!
 
     //rotate the dragon slowly...
     //maybe something like a call to glRotatef(degrees, axis[3])
-    ////////////////spinAmount += 1;glRotatef(spinAmount,0,0,1);
+    //glPushMatrix();glRotatef(spinAmount,0,0,1);glTranslatef(1,-1,1);glRotatef(spinAmount,0,0,1); 
 
     spinAmount += 1;
 
-    glPushMatrix();
-    glRotatef(spinAmount,0,0,1);
-    glTranslatef(1,-1,1);
-    glRotatef(spinAmount,0,0,1);
+    //drawDragon();
 
-    drawDragon();
-
-    glPopMatrix();
-    glScalef(3,0.5,1);
-    drawDragon();
 
     //draw all particles
 	for(list<Particle>::iterator currParticle=allParticles.begin();currParticle!=allParticles.end();++currParticle)
 	{
+        currParticle->updatePosition(0.1);
 		currParticle->drawMyself();
 	}
 }
