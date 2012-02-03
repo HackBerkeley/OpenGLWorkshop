@@ -9,6 +9,7 @@ transformations on geometry
 	-big section!!
 	-rotations about any axis
 	-loading from identity -> starting over essentially
+
 	-translations
 	-concatenation of operations
 		-what is the difference of rotating first, and then translating vs
@@ -20,3 +21,4 @@ user interaction (clicking, ray picking, etc)
 
 update function
 
+maybe animation?

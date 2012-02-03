@@ -1,4 +1,4 @@
-// Simple OpenGL example for CS184 F06 by Nuttapong Chentanez, modified from sample code for CS184 on Sp06
+//3d workshop!
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -14,7 +14,6 @@
 #include "Eigen/Eigenvalues"
 #include "Eigen/Dense"
 #include "Eigen/Eigen"
-//#include "FreeImage.h"
 
 using namespace Eigen;
 using namespace std;
@@ -148,6 +147,7 @@ int trailLength = 60;
 /************** Workshop Globals ***********/
 
 Vector3f teapotLocation;
+float spinAmount = 0;
 
 /****************
 * Math Functions
@@ -166,7 +166,8 @@ float myRand()
 	//that corresponds to the intersection point
 	//
 	// (-1 returned for no intersection)
-float rayPlaneIntersect(Vector3f origin, Vector3f direction, Vector3f planePoint, Vector3f planeNormal)
+float rayPlaneIntersect (Vector3f origin, Vector3f direction,
+                         Vector3f planePoint, Vector3f planeNormal)
 {
 	//first get the origin - line origin
 	Vector3f diff = planePoint - origin;
@@ -278,10 +279,13 @@ public:
     
 	void updatePosition(float deltaT)
 	{
+        //for the animation
 		trailList.push_back(pos);
 
 		//standard kinematic equation
-		pos = pos + vel * deltaT + deltaT * deltaT * 0.5f * accel;
+		pos = pos + 
+                vel * deltaT + 
+                deltaT * deltaT * 0.5f * accel;
 
 		//collision detection
 		collisionCheck();
@@ -297,16 +301,6 @@ public:
 		
 		drawTrails();
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	void drawTrails()
@@ -421,6 +415,7 @@ public:
         this->height = 1.0f;
         this->myId = 1;
     }
+
     Snowman(Vector3f pos, Vector3f vel, float width, float height, int id)
     {
         this->pos = pos; this->vel = vel; this->width = width; this->height = height;
@@ -441,8 +436,6 @@ public:
         return this->myId;
     }
 
-
-
     void drawMyself()
     {
 
@@ -460,14 +453,10 @@ public:
 
     void updatePosition(float deltaT)
     {
-
-
-
-
+        //kinematics
+        pos = pos +
+                deltaT * vel;
     }
-
-
-
 };
 
 
@@ -617,12 +606,14 @@ void updateTeapotPosition(int x, int y)
    //to pass into function
    float originArray[3];
    
+   //Part VI: Ray Picking
+
    //get the ray direction and origin
    Vector3f direction = rayPick(x,y,originArray);
    Vector3f origin(originArray[0],originArray[1],originArray[2]);
 	
 	//get the direction and origin
-	//find the point with which it intersects the x y plane
+	//find the point with which it intersects the x z plane
 	Vector3f planeNormal(0,1,0);
 	teapotLocation = planePoint(origin,direction,planeNormal);
 	
@@ -653,31 +644,49 @@ void handleClick(int button, int state, int x, int y)
     Vector3f direction = rayPick(x, y, origin);
     Vector3f originPos(origin[0],origin[1],origin[2]);
 
-    updateTeapotPosition(x,y);
-	
+    if(button == GLUT_LEFT_BUTTON)
+    {
+        updateTeapotPosition(x,y);
+    }
+    else
+    {
+        
+    }
+}
+
+void drawTeapot() {
+	//draw the teapot
+	glPushMatrix();
+	glTranslatef(teapotLocation(0),teapotLocation(1),teapotLocation(2));
+	glutSolidTeapot(0.25f);
+	glPopMatrix();
 }
 
 
 void handleDrawing()
 {
 
-	//draw the teapot
-	glPushMatrix();
-	glTranslatef(teapotLocation(0),teapotLocation(1),teapotLocation(2));
-	glutSolidTeapot(0.25f);
-	glPopMatrix();
-
-	
-	
-	//draw the origin lines
+	//draw the axes and such
 	drawAxes();
+    //drawTeapot();
+
+    //3D Workshop Part I:
+
+    //draw a triangle!
+
+    //Something like glBegin(GL_TRIANGLES)
+    //a few verticles wherever you like
+    //then end glEnd()
+    ////////////////////////////////////////glBegin(GL_TRIANGLES);glColor3f(0,1,0)glVertex3f(0,0,1);glColor3f(1,0,0)glVertex3f(-1,0,0);glColor3f(0,0,1);glVertex3f(1,0,0);glEnd();
+
+    //draw the dragon
 
 
+    //draw all particles
 	for(list<Particle>::iterator currParticle=allParticles.begin();currParticle!=allParticles.end();++currParticle)
 	{
 		currParticle->drawMyself();
 	}
-
 }
 
 
@@ -699,6 +708,21 @@ void update(int value) {
 	glutPostRedisplay();
 	//reset our timer
 	glutTimerFunc(25, update, 0);
+}
+
+void loadDragonFile() {
+    cout << "hi";
+
+    ifstream myfile("dragon.obj",ios::in);
+    if(!myfile.is_open())
+    {
+        cout << "\nDragon file is not present!";
+        exit(0);
+    }
+
+
+
+
 }
 
 
@@ -732,6 +756,9 @@ int main(int argc, char** argv) {
 	
 	//update euler angles
 	calculateLittleEs();
+
+    //load the file
+    loadDragonFile();
 
 	//do the main loop!
 	glutMainLoop();
