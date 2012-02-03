@@ -743,7 +743,7 @@ void handleDrawing()
 	//draw the axes and such
 	drawAxes();
 
-    drawTeapot();
+    //drawTeapot();
 
     //3D Workshop Part I:
     //draw a triangle!
@@ -766,7 +766,6 @@ void handleDrawing()
     spinAmount += 1;
 
     //drawDragon();
-
 
     //draw all particles
 	for(list<Particle>::iterator currParticle=allParticles.begin();currParticle!=allParticles.end();++currParticle)
@@ -799,7 +798,10 @@ void update(int value) {
 
 void loadDragonFile() {
 
-    ifstream myfile("dragon.obj",ios::in);
+    string theFileName = "dragon.obj";
+    //theFileName = "bunny.obj";
+
+    ifstream myfile(theFileName.c_str(),ios::in);
     if(!myfile.is_open())
     {
         cout << "\nDragon file is not present!" << endl;
@@ -833,7 +835,7 @@ void loadDragonFile() {
 
     //rewind file
     myfile.close();
-    myfile.open("dragon.obj",ios::in);
+    myfile.open(theFileName.c_str(),ios::in);
 
     cout << "\nThe number of vertices is " << numVertices << endl;
     cout << "\nThe number of faces is " << numFaces << endl;
