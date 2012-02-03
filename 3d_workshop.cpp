@@ -146,7 +146,11 @@ int trailLength = 60;
 
 /************** Workshop Globals ***********/
 
+int numDragonFaces;
+Vector3f * dragonVertices;
+Vector3i * dragonFaces;
 Vector3f teapotLocation;
+
 float spinAmount = 0;
 
 /****************
@@ -207,6 +211,19 @@ Vector3f planePoint(Vector3f lineOrigin, Vector3f direction, Vector3f planeNorma
 	return point;
 }
 
+/***** cheater functions if you need help ****/
+
+void cheater1(void) {
+    glBegin(GL_TRIANGLES);glColor3f(0,1,0);glVertex3f(0,0,1);glColor3f(1,0,0);glVertex3f(-1,0,0);glColor3f(0,0,1);glVertex3f(1,0,0);glEnd();
+}
+
+Vector3f cheater2(Vector3f vertex0, Vector3f vertex1, Vector3f vertex2) {
+
+    Vector3f edge1 = vertex1 - vertex0;Vector3f edge2 = vertex2 - vertex0;Vector3f normal = edge1.cross(edge2);
+    return normal;
+
+
+}
 
 /***************CLASSES************
 **********************************/
@@ -662,6 +679,48 @@ void drawTeapot() {
 	glPopMatrix();
 }
 
+void drawDragon() {
+    glCallList(1);
+}
+
+void makeDragonList() {
+    //3D Workshop Part II:
+    //draw the dragon!
+
+    glNewList(1,GL_COMPILE);
+
+    for(int i = 0; i < numDragonFaces; i++)
+    {
+        Vector3i vertices = dragonFaces[i];
+        Vector3f vertex0 = dragonVertices[vertices[0]-1];
+        Vector3f vertex1 = dragonVertices[vertices[1]-1];
+        Vector3f vertex2 = dragonVertices[vertices[2]-1];
+
+        //3D Workshop Part II:
+        //compute a normal!
+        //exercise A)
+
+        //might need to draw it, but probably something like subtracting and crossing...
+        Vector3f normal(0,0,1);
+        normal = cheater2(vertex0,vertex1,vertex2);
+
+
+        //draw this triangle
+        glBegin(GL_TRIANGLES);
+
+        glNormal3f(normal[0],normal[1],normal[2]);
+
+        glVertex3f(vertex0[0],vertex0[1],vertex0[2]);
+        glVertex3f(vertex1[0],vertex1[1],vertex1[2]);
+        glVertex3f(vertex2[0],vertex2[1],vertex2[2]);
+
+        glEnd();
+
+    }
+    glEndList();
+
+}
+
 
 void handleDrawing()
 {
@@ -671,16 +730,35 @@ void handleDrawing()
     //drawTeapot();
 
     //3D Workshop Part I:
-
     //draw a triangle!
+
+    //exercise A)
 
     //Something like glBegin(GL_TRIANGLES)
     //a few verticles wherever you like
     //then end glEnd()
-    ////////////////////////////////////////glBegin(GL_TRIANGLES);glColor3f(0,1,0)glVertex3f(0,0,1);glColor3f(1,0,0)glVertex3f(-1,0,0);glColor3f(0,0,1);glVertex3f(1,0,0);glEnd();
+    //cheater1(); 
 
-    //draw the dragon
 
+    //3D Workshop Part III:
+    //Transformations!!!
+
+    //rotate the dragon slowly...
+    //maybe something like a call to glRotatef(degrees, axis[3])
+    ////////////////spinAmount += 1;glRotatef(spinAmount,0,0,1);
+
+    spinAmount += 1;
+
+    glPushMatrix();
+    glRotatef(spinAmount,0,0,1);
+    glTranslatef(1,-1,1);
+    glRotatef(spinAmount,0,0,1);
+
+    drawDragon();
+
+    glPopMatrix();
+    glScalef(3,0.5,1);
+    drawDragon();
 
     //draw all particles
 	for(list<Particle>::iterator currParticle=allParticles.begin();currParticle!=allParticles.end();++currParticle)
@@ -711,18 +789,111 @@ void update(int value) {
 }
 
 void loadDragonFile() {
-    cout << "hi";
 
     ifstream myfile("dragon.obj",ios::in);
     if(!myfile.is_open())
     {
-        cout << "\nDragon file is not present!";
+        cout << "\nDragon file is not present!" << endl;
         exit(0);
     }
 
+    //first see how many vertices there are
+    int numVertices = 0;
+    int numFaces = 0;
 
+    string line;
+    while(!myfile.eof())
+    {
+        getline(myfile,line);
 
+        if(line[0] == 'v')
+        {
+            numVertices++;
+        }
+        else if(line[0] == 'f')
+        {
+            numFaces++;
+        }
+        else
+        {
+            //end of vertices, break
+            break;
+        }
+    }
+    numDragonFaces = numFaces;
 
+    //rewind file
+    myfile.close();
+    myfile.open("dragon.obj",ios::in);
+
+    cout << "\nThe number of vertices is " << numVertices << endl;
+    cout << "\nThe number of faces is " << numFaces << endl;
+
+    //make the array for this
+    dragonVertices = new Vector3f[numVertices];
+    dragonFaces = new Vector3i[numFaces];
+
+    int totalNum = numVertices + numFaces;
+    int vertexCounter = 0;
+    int faceCounter = 0;
+
+    //now go ahead and rewind and go through it again
+    for(int lineCounter = 0; lineCounter < totalNum; lineCounter++)
+    {
+        getline(myfile,line);
+
+        //break up line
+        string word;
+        istringstream iss(line,istringstream::in);
+        int faces[3];
+        float vertices[3];
+        int partCounter = 0;
+
+        bool isFace = false;
+        bool hasDecided = false;
+
+        //read in the data from this line, either float or int
+        while(iss >> word)
+        {
+            //cout << "\nThe word " << word << endl;
+            if(!hasDecided)
+            {
+                hasDecided = true;
+                if(word == "f")
+                {
+                    isFace = true;
+                }
+            }
+            else
+            {
+                if(isFace)
+                {
+                    faces[partCounter] = atoi(word.c_str());
+                }
+                else
+                {
+                    vertices[partCounter] = atof(word.c_str());
+                }
+                partCounter++;
+            }
+        }
+
+        //set the right thing
+        if(isFace)
+        {
+            dragonFaces[faceCounter] = Vector3i(faces[0],faces[1],faces[2]);
+            faceCounter++;
+        }
+        else
+        {
+            dragonVertices[vertexCounter] = Vector3f(vertices[0],vertices[1],vertices[2]);
+            vertexCounter++;
+        }
+
+    }
+    
+
+    myfile.close();
 }
 
 
@@ -759,6 +930,7 @@ int main(int argc, char** argv) {
 
     //load the file
     loadDragonFile();
+    makeDragonList();
 
 	//do the main loop!
 	glutMainLoop();
@@ -828,6 +1000,7 @@ void initRendering() {
 	glEnable(GL_LIGHTING); //Enable lighting
 	glEnable(GL_LIGHT0); //Enable light #0
 	glEnable(GL_LIGHT1); //Enable light #1
+    glEnable(GL_LIGHT2);
 	glEnable(GL_NORMALIZE); //Automatically normalize normals
 	glShadeModel(GL_SMOOTH); //Enable smooth shading
 }
@@ -865,25 +1038,34 @@ void drawScene() {
 	glRotatef(phi*PI/180.0f,		0.0f,0.0f,1.0f);
 	
 	//Add ambient light
-	GLfloat ambientColor[] = {0.1f, 0.1f, 0.1f, 1.0f}; //Color 
+	GLfloat ambientColor[] = {0.1f, 0.0f, 0.0f, 1.0f}; //Color 
 	GLfloat specularColor[] = {1.0f,1.0f,1.0f,1.0f};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
 	
 	//Add positioned light
-	GLfloat lightColor0[] = {0.0f, 0.0f, 0.9f, 1.0f}; //Color 
-	GLfloat lightPos0[] = {-10.0f, 10.5f, 10.5f, 1.0f}; //Positioned at 
+	GLfloat lightColor0[] = {0.0f, 0.1f, 0.7f, 1.0f}; //Color 
+	GLfloat lightPos0[] = {-0.0f, 10.5f, 10.5f, 1.0f}; //Positioned at 
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, specularColor);
 	
 	//Add directed light
-	GLfloat lightColor1[] = {0.9f, 0.9f, 0.9f, 1.0f};
+	GLfloat lightColor1[] = {0.7f, 0.7f, 0.7f, 1.0f};
 	GLfloat lightPos1[] = {-1.0f, -1.5f, 0.0f, 1.0f};
 	GLfloat ambientLight[] = {0.3f,0.3f,0.3f,1.0f};
+
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor1);
 	glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
 	glLightfv(GL_LIGHT1, GL_AMBIENT, ambientLight);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, specularColor);
+
+    GLfloat lightColor2[] = {0.7f, 0.0f, 0.0f, 1.0f};
+	GLfloat lightPos2[] = {0.5f, -1.5f, -1.0f, 1.0f};
+
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, lightColor2);
+	glLightfv(GL_LIGHT2, GL_POSITION, lightPos2);
+	glLightfv(GL_LIGHT2, GL_SPECULAR, specularColor);
+
 
 	
 	if(!isHiddenWire)
