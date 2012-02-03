@@ -15,3 +15,6 @@ A rough outline is as follows:
         * Concatenation of transformations
 * Part VI: User interaction
     * Ray picking: Transforming 2D clicks into a 3D world
+
+
+After the workshop, I will update this README with full coding instructions on how to follow along at home
