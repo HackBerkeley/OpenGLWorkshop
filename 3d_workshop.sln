@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3d_workshop", "3d_workshop.vcxproj", "{9D3B364F-0A7B-4386-A592-6DBDB89764A2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D3B364F-0A7B-4386-A592-6DBDB89764A2}.Debug|Win32.ActiveCfg = Release|Win32
+		{9D3B364F-0A7B-4386-A592-6DBDB89764A2}.Debug|Win32.Build.0 = Release|Win32
+		{9D3B364F-0A7B-4386-A592-6DBDB89764A2}.Release|Win32.ActiveCfg = Release|Win32
+		{9D3B364F-0A7B-4386-A592-6DBDB89764A2}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
