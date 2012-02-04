@@ -765,7 +765,7 @@ void handleDrawing()
 
     spinAmount += 1;
 
-    //drawDragon();
+    drawDragon();
 
     //draw all particles
 	for(list<Particle>::iterator currParticle=allParticles.begin();currParticle!=allParticles.end();++currParticle)
@@ -849,7 +849,7 @@ void loadDragonFile() {
     int faceCounter = 0;
 
     //now go ahead and rewind and go through it again
-    for(int lineCounter = 0; lineCounter < totalNum; lineCounter++)
+    for(int lineCounter = 0; lineCounter < totalNum - 1; lineCounter++)
     {
         getline(myfile,line);
 
@@ -902,7 +902,6 @@ void loadDragonFile() {
         }
 
     }
-    
 
     myfile.close();
 }
